@@ -8,17 +8,9 @@ const countriesContainer = document.querySelector(".countries");
 const apiUrl = "https://restcountries.com/v2";
 
 // old way
-const getCountryData = function (country) {
-  const request = new XMLHttpRequest();
-  request.open("GET", `${apiUrl}/name/${country}`);
-  request.send();
-
-  request.addEventListener("load", function () {
-    const [data] = JSON.parse(this.responseText);
-    console.log(data);
-
-    const html = `
-    <article class="country">
+const renderCountry = function (data, className = "") {
+  const html = `
+    <article class="country ${className}">
       <img class="country__img" src="${data.flag}" />
       <div class="country__data">
         <h3 class="country__name">${data.name}</h3>
@@ -31,10 +23,54 @@ const getCountryData = function (country) {
       </div>
     </article>`;
 
-    countriesContainer.insertAdjacentHTML("beforeend", html);
-    countriesContainer.style.opacity = 1;
+  countriesContainer.insertAdjacentHTML("beforeend", html);
+  countriesContainer.style.opacity = 1;
+};
+
+const getCountryAndNeighbor = function (country) {
+  // AJAX call country 1
+  const request = new XMLHttpRequest();
+  request.open("GET", `${apiUrl}/name/${country}`);
+  request.send();
+
+  request.addEventListener("load", function () {
+    const [data] = JSON.parse(this.responseText);
+    console.log(data);
+
+    // Render country 1
+    renderCountry(data);
+
+    // Get neighbor country (2)
+    const [neighbor] = data.borders;
+    console.log(neighbor);
+
+    if (!neighbor) return;
+
+    // AJAX call country 2
+    const request2 = new XMLHttpRequest();
+    request2.open("GET", `${apiUrl}/alpha/${neighbor}`);
+    request2.send();
+
+    request2.addEventListener("load", function () {
+      const data2 = JSON.parse(this.responseText);
+      renderCountry(data2, "neighbor");
+    });
   });
 };
 
-getCountryData("france");
-getCountryData("usa");
+// getCountryAndNeighbor("france");
+getCountryAndNeighbor("usa");
+
+// callback hell
+// setTimeout(() => {
+//   console.log("1 second passed");
+//   setTimeout(() => {
+//     console.log("2 second passed");
+//     setTimeout(() => {
+//       console.log("3 second passed");
+//       setTimeout(() => {
+//         console.log("4 second passed");
+//       }, 1000);
+//     }, 1000);
+//   }, 1000);
+// }, 1000);
