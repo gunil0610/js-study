@@ -27,39 +27,39 @@ const renderCountry = function (data, className = "") {
   countriesContainer.style.opacity = 1;
 };
 
-const getCountryAndNeighbor = function (country) {
-  // AJAX call country 1
-  const request = new XMLHttpRequest();
-  request.open("GET", `${apiUrl}/name/${country}`);
-  request.send();
+// const getCountryAndNeighbor = function (country) {
+//   // AJAX call country 1
+//   const request = new XMLHttpRequest();
+//   request.open("GET", `${apiUrl}/name/${country}`);
+//   request.send();
 
-  request.addEventListener("load", function () {
-    const [data] = JSON.parse(this.responseText);
-    console.log(data);
+//   request.addEventListener("load", function () {
+//     const [data] = JSON.parse(this.responseText);
+//     console.log(data);
 
-    // Render country 1
-    renderCountry(data);
+//     // Render country 1
+//     renderCountry(data);
 
-    // Get neighbor country (2)
-    const [neighbor] = data.borders;
-    console.log(neighbor);
+//     // Get neighbor country (2)
+//     const [neighbor] = data.borders;
+//     console.log(neighbor);
 
-    if (!neighbor) return;
+//     if (!neighbor) return;
 
-    // AJAX call country 2
-    const request2 = new XMLHttpRequest();
-    request2.open("GET", `${apiUrl}/alpha/${neighbor}`);
-    request2.send();
+//     // AJAX call country 2
+//     const request2 = new XMLHttpRequest();
+//     request2.open("GET", `${apiUrl}/alpha/${neighbor}`);
+//     request2.send();
 
-    request2.addEventListener("load", function () {
-      const data2 = JSON.parse(this.responseText);
-      renderCountry(data2, "neighbor");
-    });
-  });
-};
+//     request2.addEventListener("load", function () {
+//       const data2 = JSON.parse(this.responseText);
+//       renderCountry(data2, "neighbor");
+//     });
+//   });
+// };
 
 // getCountryAndNeighbor("france");
-getCountryAndNeighbor("usa");
+// getCountryAndNeighbor("usa");
 
 // callback hell
 // setTimeout(() => {
@@ -74,3 +74,12 @@ getCountryAndNeighbor("usa");
 //     }, 1000);
 //   }, 1000);
 // }, 1000);
+
+// Promises and the fetch api
+const getCountryData = function (country) {
+  fetch(`${apiUrl}/name/${country}`)
+    .then((res) => res.json())
+    .then((data) => renderCountry(data[0]));
+};
+
+getCountryData("france");
