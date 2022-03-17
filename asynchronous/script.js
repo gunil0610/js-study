@@ -76,10 +76,20 @@ const renderCountry = function (data, className = "") {
 // }, 1000);
 
 // Promises and the fetch api
-const getCountryData = function (country) {
+const getCountryAndNeighbor = function (country) {
   fetch(`${apiUrl}/name/${country}`)
     .then((res) => res.json())
-    .then((data) => renderCountry(data[0]));
+    .then((data) => {
+      renderCountry(data[0]);
+      const neighbor = data[0].borders[0];
+
+      if (!neighbor) return;
+
+      // Country 2
+      return fetch(`${apiUrl}/alpha/${neighbor}`);
+    })
+    .then((res) => res.json())
+    .then((data) => renderCountry(data, "neighbour"));
 };
 
-getCountryData("france");
+getCountryAndNeighbor("france");
