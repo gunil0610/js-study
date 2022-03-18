@@ -79,19 +79,28 @@ const renderError = function (msg) {
 // }, 1000);
 
 // Promises and the fetch app
+const getJSON = function (url, errorMsg = "Something went wrong") {
+  return fetch(url).then((res) => {
+    if (!res.ok) {
+      throw new Error(errorMsg);
+    }
+
+    return res.json();
+  });
+};
+
 const getCountryAndNeighbor = function (country) {
-  fetch(`${apiUrl}/name/${country}`)
-    .then((res) => res.json())
+  // Country 1
+  getJSON(`${apiUrl}/name/${country}`, "Country not found")
     .then((data) => {
       renderCountry(data[0]);
+      if (!data[0].borders) throw new Error("No neighbour found!");
+
       const neighbor = data[0].borders[0];
 
-      if (!neighbor) return;
-
       // Country 2
-      return fetch(`${apiUrl}/alpha/${neighbor}`);
+      return getJSON(`${apiUrl}/alpha/${neighbor}`, "Country not found");
     })
-    .then((res) => res.json())
     .then((data) => renderCountry(data, "neighbour"))
     .catch((err) => {
       console.log(`${err} 💥💥💥`);
@@ -103,3 +112,5 @@ const getCountryAndNeighbor = function (country) {
 btn.addEventListener("click", function () {
   getCountryAndNeighbor("france");
 });
+
+getCountryAndNeighbor("australia");
