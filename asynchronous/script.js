@@ -7,7 +7,6 @@ const countriesContainer = document.querySelector(".countries");
 
 const apiUrl = "https://restcountries.com/v2";
 
-// old way
 const renderCountry = function (data, className = "") {
   const html = `
     <article class="country ${className}">
@@ -24,9 +23,13 @@ const renderCountry = function (data, className = "") {
     </article>`;
 
   countriesContainer.insertAdjacentHTML("beforeend", html);
-  countriesContainer.style.opacity = 1;
 };
 
+const renderError = function (msg) {
+  countriesContainer.insertAdjacentText("beforeend", msg);
+};
+
+// old way
 // const getCountryAndNeighbor = function (country) {
 //   // AJAX call country 1
 //   const request = new XMLHttpRequest();
@@ -75,7 +78,7 @@ const renderCountry = function (data, className = "") {
 //   }, 1000);
 // }, 1000);
 
-// Promises and the fetch api
+// Promises and the fetch app
 const getCountryAndNeighbor = function (country) {
   fetch(`${apiUrl}/name/${country}`)
     .then((res) => res.json())
@@ -89,7 +92,14 @@ const getCountryAndNeighbor = function (country) {
       return fetch(`${apiUrl}/alpha/${neighbor}`);
     })
     .then((res) => res.json())
-    .then((data) => renderCountry(data, "neighbour"));
+    .then((data) => renderCountry(data, "neighbour"))
+    .catch((err) => {
+      console.log(`${err} 💥💥💥`);
+      renderError(`Something went wrong 💥💥 ${err.message}. Try again!`);
+    })
+    .finally(() => (countriesContainer.style.opacity = 1));
 };
 
-getCountryAndNeighbor("france");
+btn.addEventListener("click", function () {
+  getCountryAndNeighbor("france");
+});
